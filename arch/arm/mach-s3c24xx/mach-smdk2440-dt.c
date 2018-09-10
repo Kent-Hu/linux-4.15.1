@@ -40,7 +40,6 @@ static void __init s3c2440_dt_machine_init(void)
 
 static const char *const s3c2440_dt_compat[] __initconst = {
 	"samsung,s3c2440",
-	"samsung,smdk2440",
 	NULL
 };
 
