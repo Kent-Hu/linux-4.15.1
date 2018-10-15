@@ -2125,9 +2125,9 @@ s3c24xx_serial_console_setup(struct console *co, char *options)
 	int parity = 'n';
 	int flow = 'n';
 
-	dbg("s3c24xx_serial_console_setup: co=%p (%d), %s\n",
-	    co, co->index, options);
-
+	dbg("s3c24xx_serial_console_setup:co=%p (%d), name=%s, %s\n",
+	    co,co->index, co->name, options);
+    
 	/* is this a valid port */
 
 	if (co->index == -1 || co->index >= CONFIG_SERIAL_SAMSUNG_UARTS)
@@ -2137,9 +2137,11 @@ s3c24xx_serial_console_setup(struct console *co, char *options)
 
 	/* is the port configured? */
 
+	dbg("mapbase=%d\r\n",port->mapbase);
 	if (port->mapbase == 0x0)
 		return -ENODEV;
-
+    
+	dbg("cons_uart=%d\r\n",port);
 	cons_uart = port;
 
 	dbg("s3c24xx_serial_console_setup: port=%p (%d)\n", port, co->index);

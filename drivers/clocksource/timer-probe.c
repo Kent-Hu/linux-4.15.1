@@ -26,12 +26,19 @@ static const struct of_device_id __timer_of_table_sentinel
 
 void __init timer_probe(void)
 {
+	unsigned char i=0;
 	struct device_node *np;
 	const struct of_device_id *match;
 	of_init_fn_1_ret init_func_ret;
 	unsigned timers = 0;
 	int ret;
 
+	for(i=0;i<sizeof(__timer_of_table)/sizeof(of_device_id);i++)
+	{
+	    pr_info("__timer_of_table.name：%s\r\n",__timer_of_table[i].name);
+		pr_info("__timer_of_table.type：%s\r\n",__timer_of_table[i].type);
+		pr_info("__timer_of_table.compatible：%s\r\n",__timer_of_table[i].compatible);
+	}
 	for_each_matching_node_and_match(np, __timer_of_table, &match) {
 		if (!of_device_is_available(np))
 			continue;

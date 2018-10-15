@@ -103,6 +103,24 @@ enum devkmsg_log_masks {
 /* Keep both the 'on' and 'off' bits clear, i.e. ratelimit by default: */
 #define DEVKMSG_LOG_MASK_DEFAULT	0
 
+
+extern void printascii(const char *);
+
+
+static void dbg_kent(const char *fmt, ...)
+{
+	va_list va;
+	char buff[256];
+
+	va_start(va, fmt);
+	vscnprintf(buff, sizeof(buff), fmt, va);
+	va_end(va);
+
+	printascii(buff);
+}
+
+
+
 static unsigned int __read_mostly devkmsg_log = DEVKMSG_LOG_MASK_DEFAULT;
 
 static int __control_devkmsg(char *str)
@@ -1896,6 +1914,7 @@ static int __add_preferred_console(char *name, int idx, char *options,
 	for (i = 0, c = console_cmdline;
 	     i < MAX_CMDLINECONSOLES && c->name[0];
 	     i++, c++) {
+		dbg_kent("name1:%s   name2:%s\n",c->name,name);
 		if (strcmp(c->name, name) == 0 && c->index == idx) {
 			if (!brl_options)
 				preferred_console = i;
@@ -1922,10 +1941,12 @@ static int __init console_setup(char *str)
 	char buf[sizeof(console_cmdline[0].name) + 4]; /* 4 for "ttyS" */
 	char *s, *options, *brl_options = NULL;
 	int idx;
+    
+	dbg_kent("console_setup:%s\n",str);
 
 	if (_braille_console_setup(&str, &brl_options))
 		return 1;
-
+    dbg_kent("console_setup:%d\n",__LINE__);
 	/*
 	 * Decode str into name, index, options.
 	 */
@@ -2403,6 +2424,7 @@ void register_console(struct console *newcon)
 	struct console_cmdline *c;
 	static bool has_preferred;
 
+	dbg_kent("newcon name:%s\n",newcon->name);
 	if (console_drivers)
 		for_each_console(bcon)
 			if (WARN(bcon == newcon,

@@ -3607,6 +3607,10 @@ void __init of_clk_init(const struct of_device_id *matches)
 	bool force = false;
 	LIST_HEAD(clk_provider_list);
 
+	pr_notice("of_clk_init\r\n");
+	pr_info("__clk_of_table.name：%s\r\n",__clk_of_table.name);                                                                               
+    pr_info("__clk_of_table.type：%s\r\n",__clk_of_table.type);                                                                            
+    pr_info("__clk_of_table.compatible：%s\r\n",__clk_of_table.compatible);                                                                   
 	if (!matches)
 		matches = &__clk_of_table;
 

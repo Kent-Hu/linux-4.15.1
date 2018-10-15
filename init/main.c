@@ -511,6 +511,28 @@ static void __init mm_init(void)
 	pti_init();
 }
 
+#define GPFCON      (*(volatile unsigned long*)ioremap(0x56000050,4))
+#define GPFDAT      (*(volatile unsigned long *)ioremap(0x56000054,4))
+
+/*
+ * LED1,LED2,LED4对应GPF4、GPF5、GPF6
+ */
+#define    GPF4_out    (1<<(4*2))
+#define    GPF5_out    (1<<(5*2))
+#define    GPF6_out    (1<<(6*2))
+
+#define    GPF4_msk    (3<<(4*2))
+#define    GPF5_msk    (3<<(5*2))
+#define    GPF6_msk    (3<<(6*2))
+
+void led_gpio_init(void)
+{
+	GPFCON &= ~(GPF4_msk | GPF5_msk | GPF6_msk);
+    GPFCON |= GPF4_out | GPF5_out | GPF6_out;
+    
+	GPFDAT |= (1<<4) | (1<<5) | (1<<6);       //all leds off
+}
+
 asmlinkage __visible void __init start_kernel(void)
 {
 	char *command_line;
@@ -632,16 +654,21 @@ asmlinkage __visible void __init start_kernel(void)
 	local_irq_enable();
 
 	kmem_cache_init_late();
-
+    led_gpio_init();
+    
 	/*
 	 * HACK ALERT! This is early. We're enabling the console before
 	 * we've done PCI setups etc, and console_init() must be aware of
 	 * this. But we do want output early, in case something goes wrong.
 	 */
+    pr_notice("###################### console_init\n");
+	GPFDAT &= ~(1<<4);       // LED1 on
 	console_init();
 	if (panic_later)
 		panic("Too many boot %s vars at `%s'", panic_later,
 		      panic_param);
+
+    pr_notice("###################### console_init_completed\n");
 
 	lockdep_info();
 
@@ -669,17 +696,23 @@ asmlinkage __visible void __init start_kernel(void)
 		initrd_start = 0;
 	}
 #endif
+    
 	page_ext_init();
 	kmemleak_init();
 	debug_objects_mem_init();
 	setup_per_cpu_pageset();
 	numa_policy_init();
 	acpi_early_init();
+
 	if (late_time_init)
 		late_time_init();
+
+	GPFDAT &= ~(1<<5);       // LED2 on
 	calibrate_delay();
+    GPFDAT &= ~(1<<6);       // LED3 on
 	pid_idr_init();
 	anon_vma_init();
+   
 #ifdef CONFIG_X86
 	if (efi_enabled(EFI_RUNTIME_SERVICES))
 		efi_enter_virtual_mode();

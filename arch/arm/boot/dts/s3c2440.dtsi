@@ -17,7 +17,7 @@
 	compatible = "samsung,s3c2440";
 
 	aliases {
-		serial3 = &uart_3;
+		serial0 = &uart_0;
 	};
 
 	cpus {
@@ -54,8 +54,9 @@
 				"clk_uart_baud3";
 		clocks = <&clocks PCLK_UART0>, <&clocks PCLK_UART0>,
 				<&clocks SCLK_UART>;
+		reg = <0x50000000 0x4000>;
 	};
-
+/*
 	uart_1: serial@50004000 {
 		compatible = "samsung,s3c2440-uart";
 		clock-names = "uart", "clk_uart_baud2",
@@ -82,7 +83,7 @@
 				<&clocks SCLK_UART>;
 		status = "disabled";
 	};
-
+*/
 	sdhci_1: sdhci@4AC00000 {
 		compatible = "samsung,s3c6410-sdhci";
 		reg = <0x4AC00000 0x100>;
@@ -113,7 +114,9 @@
 
 	rtc: rtc@57000000 {
 		compatible = "samsung,s3c2440-rtc";
+		reg = <0x57000000 0x100>;
 		clocks = <&clocks PCLK_RTC>;
+		interrupts = <0 0 30 3>, <0 0 8 3>;
 		clock-names = "rtc";
 	};
 
